@@ -7,7 +7,7 @@ use scraper::{Html, Selector};
 
 use post::Post;
 
-pub fn extract() -> Vec<Post> {
+pub fn old_extract() -> Vec<Post> {
     let mut resp = reqwest::get("http://manishearth.github.io/blog/archives/").unwrap();
     let mut body = String::new();
     resp.read_to_string(&mut body).unwrap();
@@ -43,7 +43,7 @@ pub fn extract() -> Vec<Post> {
     posts
 }
 
-/*pub fn extract() -> Vec<Post> {
+pub fn extract() -> Vec<Post> {
     #[derive(Deserialize, Debug)]
     struct GithubContentDir {
         name: String,
@@ -54,18 +54,24 @@ pub fn extract() -> Vec<Post> {
 
     let client = reqwest::Client::new().unwrap();
 
-    let mut all_posts: Vec<GithubContentDir> =
+    let all_posts: Vec<GithubContentDir> =
         client.get("https://api.github.com/repos/manishearth/manishearth.github.io/contents/source/_posts?ref=source")
         .send().unwrap().json().unwrap();
     
-    for post in all_posts {
-        let resp = client.get(post.download_url).send().unwrap();
+    for post in all_posts.iter().take(15) {
+        let mut resp = client.get(&post.download_url).send().unwrap();
         let mut body = String::new();
-        resp.read_to_string(&mut body);
-    }
+        resp.read_to_string(&mut body).unwrap();
+        //let body = String::from_utf8(body).unwrap();
+        posts.push(Post {
+            url: post.download_url.clone(),
+            title: post.name.clone(),
+            content: body.clone()
+        });
 
-    println!("{:#?}", all_posts);
+        println!("manishearth {}: {} ({:?})", post.name, post.download_url, body.chars().take(20).collect::<String>());
+    }
 
     posts
 
-}*/
+}
