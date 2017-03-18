@@ -5,6 +5,7 @@ authors = ["bjorn3 <bjorn3@users.noreply.github.com>"]
 
 [dependencies]
 cursive = "0.4"
+lazy_static = "0.2"
 
 reqwest = "0.4"
 scraper = "0.4"
